@@ -3,17 +3,15 @@ const chatForm = document.getElementById("chatForm");
 const userInput = document.getElementById("userInput");
 const chatWindow = document.getElementById("chatWindow");
 
-// OpenAI API endpoint
-const API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
+// Cloudflare Worker endpoint (this is safe to keep public)
+const WORKER_URL = "https://muddy-limit-7eee.787688nev0908.workers.dev/";
 
 // System prompt to restrict responses to L'Oréal products and routines
 const SYSTEM_PROMPT =
 
 `You are an assistant for L'Oréal, a beauty and personal care company. Your role is to answer questions about L'Oréal products, routines, and recommendations.
 
-You only answer questions about L'Oréal products, routines, and recommendations. Do not answer unrelated questions to L'Oréal. If someone does, then politely decline and change the topic to L'Oréal products, routines, and recommendations.`
-
-;
+You only answer questions about L'Oréal products, routines, and recommendations. Do not answer unrelated questions to L'Oréal. If someone does, then politely decline and change the topic to L'Oréal products, routines, and recommendations.`;
 
 // Set initial message
 chatWindow.innerHTML =
@@ -42,15 +40,14 @@ chatForm.addEventListener("submit", async (e) => {
   chatWindow.scrollTop = chatWindow.scrollHeight;
 
   try {
-    // Send the user message to OpenAI API with the system prompt
-    const response = await fetch(API_ENDPOINT, {
+    // Send the user message to the Cloudflare Worker
+    // The worker calls OpenAI using a hidden server-side API key.
+    const response = await fetch(WORKER_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: userMessage },
@@ -59,12 +56,15 @@ chatForm.addEventListener("submit", async (e) => {
     });
 
     // Check if the request was successful
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
     // Parse the response from OpenAI
     const data = await response.json();
+
+    // If the worker/OpenAI request fails, show the error message
+    if (!response.ok) {
+      const errorMessage =
+        data?.error?.message || `API error: ${response.status}`;
+      throw new Error(errorMessage);
+    }
 
     // Extract the assistant's response message
     const assistantMessage = data.choices[0].message.content;
@@ -75,7 +75,7 @@ chatForm.addEventListener("submit", async (e) => {
     // Handle any errors that occur during the API request
     console.error("Error:", error);
     loadingMsg.textContent =
-      "Sorry, I encountered an error. Please make sure your API key is set up correctly and try again.";
+      "Sorry, I encountered an error. Please check your Cloudflare Worker setup and try again.";
   }
 
   // Scroll to bottom of chat window
