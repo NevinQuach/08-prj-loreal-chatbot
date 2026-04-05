@@ -9,13 +9,13 @@
 body {
   font-family: "Montserrat", Arial, Helvetica, sans-serif;
   letter-spacing: 0.5px;
-  color: #333;
+  color: #000;
   display: flex;
   justify-content: center;
 }
 
 .page-wrapper {
-  width: 95%;
+  width: 90%;
   max-width: 1000px;
 }
 
@@ -64,14 +64,14 @@ body {
 .msg.user {
   margin-left: 100px;
   text-align: right;
-  color: #333;
+  color: #000;
   background: #e8e8e8;
 }
 
 .msg.ai {
   margin-right: 100px;
   text-align: left;
-  color: #333;
+  color: #000;
   background: #e8e8e8;
 }
 
@@ -104,7 +104,7 @@ body {
   background: #000;
   color: #fff;
   border: none;
-  padding: 12px;
+  padding: 8px;
   width: 48px;
   height: 48px;
   display: flex;
@@ -115,7 +115,7 @@ body {
 }
 
 .chat-form button .material-icons {
-  font-size: 24px;
+  font-size: 28px;
 }
 
 .chat-form button:hover {
@@ -149,7 +149,7 @@ body {
 }
 
 .site-footer nav {
-  margin-top: 15px;
+  margin-top: 20px;
 }
 
 .site-footer a {
@@ -159,5 +159,35 @@ body {
 }
 
 .site-footer a:hover {
-  color: #666666;
+  color: #666;
+}
+
+/* media query */
+
+@media (max-width: 500px) {
+  .site-title {
+    font-size: 22.5px;
+  }
+
+  .msg.ai, .msg.user, .chat-form input {
+    font-size: 15px;
+  }
+
+  .site-header img {
+    width: 200px;
+  }
+
+  .site-footer nav {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .msg.user {
+    margin-left: 50px;
+  }
+
+  .msg.ai {
+    margin-right: 50px;
+  } 
 }
